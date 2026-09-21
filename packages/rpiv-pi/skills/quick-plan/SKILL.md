@@ -36,9 +36,10 @@ contract:
             required: [id, disposition]
             properties:
               id: { type: string }
-              disposition: { enum: [implemented, deferred] }
+              disposition: { enum: [implemented, deferred, rebound] }
               phase: { type: integer, minimum: 1 }
               reason: { type: string }
+              command: { type: string }
   consumes:
     meta:
       artifactKind: [research, acceptance]
@@ -164,7 +165,7 @@ Populate each `phases[].files:` from that phase's `#### N.` / `**File**:` paths 
 
 Populate `## Out of Scope` from the Step 1 goal-ask enumeration: one one-line deferral with a reason per goal ask no phase implements.
 
-Populate `acceptance:` ONLY when an `--acceptance` file was given (omit the array entirely otherwise): one entry per inventory item, in item order — `disposition: implemented` with the covering `phase:` number, or `disposition: deferred` with a one-line `reason:` (and a matching `## Out of Scope` line). Every item id from the inventory appears exactly once; never invent an id the inventory doesn't carry.
+Populate `acceptance:` ONLY when an `--acceptance` file was given (omit the array entirely otherwise): one entry per inventory item, in item order — `disposition: implemented` with the covering `phase:` number, `disposition: deferred` with a one-line `reason:` (and a matching `## Out of Scope` line), or `disposition: rebound` with `phase:`, `command:`, and `reason:`. Every item id from the inventory appears exactly once; never invent an id the inventory doesn't carry. `rebound` + `phase` + `command` + `reason` when the substance is delivered but the frozen command pins a mechanism the design changed (a file or helper name, a count): the replacement command measures the SAME observable as the item's `statement`/`expect`, reuses a check the phase's own AV runs, and drops no conjunct without saying why; substance not delivered ⇒ `deferred`, never `rebound`.
 
 Then print the path and a one-line summary: `quick-plan written: {N} phase(s), {M} files`.
 

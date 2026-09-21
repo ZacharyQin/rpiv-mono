@@ -3715,12 +3715,15 @@ describe("build audit-drop fixes", () => {
 	// reconstructing them from verdict prose. Regression guard against a future
 	// narrowing of the reads arrays (and against wrongly adding subplans to code-fix).
 	describe("plan-fix/code-fix read their lineage sources (phase 4)", () => {
-		it("build plan-fix reads goal, research, and subplans alongside the verdict/cite-check channels", () => {
+		it("build plan-fix reads goal, acceptance, research, and subplans alongside the verdict/cite-check channels", () => {
+			// `acceptance` rides along so a completeness finding naming an inventory
+			// id is repaired in the plan's `acceptance:` block against a real id.
 			expect(findWorkflow("build").stages["plan-fix"]?.reads).toEqual([
 				"plans",
 				fanin("plan-verdicts"),
 				fanin("plan-cite-check"),
 				"goal",
+				"acceptance",
 				"research",
 				fanin("subplans"),
 			]);
@@ -5532,8 +5535,11 @@ describe("build subplan cluster fanout (research threading + fail-loud mapping)"
 		expect(units.every((u) => u.prompt.includes("--as-subplan"))).toBe(true);
 	});
 
-	it("build plan stage reads research alongside the subplans fan-in (finding 4)", () => {
-		expect(findWorkflow("build").stages.plan?.reads).toEqual(["research", fanin("subplans")]);
+	it("build plan stage reads research, goal, and acceptance alongside the subplans fan-in (finding 4)", () => {
+		// Same-anchor wiring as ship's plan stage: the root merge sees the goal and
+		// the frozen inventory the completeness judge and validate read, so it can
+		// dispose of every inventory id in the plan's `acceptance:` block.
+		expect(findWorkflow("build").stages.plan?.reads).toEqual(["research", "goal", "acceptance", fanin("subplans")]);
 	});
 
 	// Finding 8 — an artifact whose identity can't be resolved must FAIL LOUD, not

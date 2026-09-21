@@ -796,8 +796,11 @@ const buildWorkflow = defineWorkflow({
 		"subplan-check": produces.script({ reads: [fanin("subplans"), "slices"], run: subplanCoverageCheck }),
 		// The root merge reads `research` (threaded as `--research` so cross-slice
 		// constraints reach the merge directly, not only via each subplan's
-		// refraction) alongside the cluster sub-plans it fans in.
-		plan: produces({ skill: "synthesize", reads: ["research", fanin("subplans")] }),
+		// refraction) alongside the cluster sub-plans it fans in. `goal` +
+		// `acceptance` reach it too: synthesize disposes every inventory id in the
+		// plan's `acceptance:` block, the same anchors the completeness judge and
+		// validate read.
+		plan: produces({ skill: "synthesize", reads: ["research", "goal", "acceptance", fanin("subplans")] }),
 		// Deterministic citation floor BEFORE the LLM plan gate (twin of `slice-check`):
 		// a fabricated `file:line` in the plan fails structurally and routes to `plan-fix`.
 		"plan-cite-check": produces.script({ reads: ["plans"], run: planCitationCheck("plan-cite-check") }),
@@ -842,7 +845,15 @@ const buildWorkflow = defineWorkflow({
 			// mirrors `plan`'s own `reads: ["research", fanin("subplans")]`. `subplans`
 			// is plan-fix-ONLY — by the code gate the plan's completeness is settled, so
 			// code-fix repairs code-shape defects and threads no subplans.
-			reads: ["plans", fanin("plan-verdicts"), fanin("plan-cite-check"), "goal", "research", fanin("subplans")],
+			reads: [
+				"plans",
+				fanin("plan-verdicts"),
+				fanin("plan-cite-check"),
+				"goal",
+				"acceptance",
+				"research",
+				fanin("subplans"),
+			],
 		}),
 		// Snapshot the graded plan BEFORE plan-fix amends it — one deterministic
 		// hop inside the existing fix loop (plan-grade/plan-confirm → plan-snapshot
