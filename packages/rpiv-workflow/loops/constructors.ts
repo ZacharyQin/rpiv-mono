@@ -134,6 +134,15 @@ export interface FanoutOptions extends LoopOptionsBase {
 	concurrency?: number;
 	/** Opt out of collect-all: any unit failure halts the run (default ⇒ collect-all). */
 	failFast?: boolean;
+	/** Opt-in terminal halt when a generation CLOSES with every declared slot a
+	 *  failed sentinel (strict all-filled-all-failed) — the run stops at the loop
+	 *  stage instead of advancing into a fan-in over an empty channel. Over-cap
+	 *  advancing generations never qualify; `failFast` wins when both are set. */
+	haltWhenAllFailed?: boolean;
+	/** Re-dispatch a soft-halted collect-all unit up to N more times — the
+	 *  whole per-unit dispatch re-runs; only the final attempt's output folds.
+	 *  Integer >= 1 (throws at construction). */
+	retryHaltedUnits?: number;
 	/** When set, the dispatcher appends `${depArtifactFlag} <path>` per direct
 	 *  `Unit.deps` entry with a non-failed filled slot — handing the dependent unit
 	 *  its dependencies' published artifacts (e.g. `"--upstream"`). Non-empty string;
@@ -176,6 +185,10 @@ export function fanout(opts: FanoutOptions): FanoutLoop {
 			: {}),
 		...(opts.depArtifactFlag !== undefined ? { depArtifactFlag: checkedDepArtifactFlag(opts.depArtifactFlag) } : {}),
 		...(opts.failFast !== undefined ? { failFast: opts.failFast } : {}),
+		...(opts.haltWhenAllFailed !== undefined ? { haltWhenAllFailed: opts.haltWhenAllFailed } : {}),
+		...(opts.retryHaltedUnits !== undefined
+			? { retryHaltedUnits: checkedPositiveInt(opts.retryHaltedUnits, "fanout(): retryHaltedUnits") }
+			: {}),
 	};
 }
 

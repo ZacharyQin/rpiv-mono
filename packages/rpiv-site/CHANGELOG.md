@@ -7,6 +7,24 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- "v2.11: the judge was the wall clock" blog post: release notes for v2.11.0, covering the risk-rulings panel unit, the batched commit-first correctness judge with its replay, and the acceptance disposition contract for build's planner.
+
+## [2.11.0] - 2026-09-21
+
+## [2.10.1] - 2026-09-13
+
+## [2.10.0] - 2026-09-12
+
+### Added
+
+- "v2.1 to v2.9: teaching the pipeline to finish" blog post: version-by-version release notes for the arc since v2.0, framed around the six lines every change follows, each item with its rationale.
+
+## [2.9.0] - 2026-09-01
+
+## [2.8.0] - 2026-08-29
+
 ## [2.7.1] - 2026-08-24
 
 ## [2.7.0] - 2026-08-21
